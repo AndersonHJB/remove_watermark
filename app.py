@@ -1,6 +1,6 @@
 from flask import Flask, request, send_file, render_template
-from PIL import Image, ImageFilter
-import io
+import cv2
+import numpy as np
 import os
 
 app = Flask(__name__)
@@ -11,23 +11,23 @@ if not os.path.exists(TEMP_DIR):
     os.makedirs(TEMP_DIR)
 
 
-# Function to remove the watermark from the image
+# Function to remove watermark by covering it with a white background
 def remove_watermark(image_path):
-    img = Image.open(image_path)
+    # Load the image using OpenCV
+    img = cv2.imread(image_path)
 
-    # Define the region to crop (adjust these coordinates as per the watermark location)
-    width, height = img.size
-    watermark_region = (width - 200, height - 50, width, height)  # Example: bottom-right region
+    # Define the watermark region (adjust coordinates according to watermark position)
+    height, width, _ = img.shape
+    watermark_region = (width - 200, height - 50, width, height)  # Adjust as needed
 
-    # Apply blur filter to the watermark area
-    cropped = img.crop(watermark_region)
-    blurred = cropped.filter(ImageFilter.GaussianBlur(10))  # Adjust blur radius as needed
+    # Fill the watermark area with white color (255, 255, 255 for white in RGB)
+    cv2.rectangle(img, (watermark_region[0], watermark_region[1]),
+                  (watermark_region[2], watermark_region[3]),
+                  (255, 255, 255), -1)
 
-    img.paste(blurred, watermark_region)
-
-    # Save processed image temporarily
+    # Save the processed image
     output_path = os.path.join(TEMP_DIR, "processed_image.png")
-    img.save(output_path)
+    cv2.imwrite(output_path, img)
 
     return output_path
 
@@ -48,12 +48,9 @@ def upload_image():
     if file.filename == '':
         return "No selected file", 400
 
-    img_bytes = file.read()
-    img = Image.open(io.BytesIO(img_bytes))
-
     # Save uploaded image temporarily
     input_path = os.path.join(TEMP_DIR, "input_image.png")
-    img.save(input_path)
+    file.save(input_path)
 
     # Remove watermark
     processed_image_path = remove_watermark(input_path)
