@@ -35,7 +35,7 @@
         </section>
     </div>
 
-    <!-- JavaScript to handle file name display and image result -->
+    <!-- JavaScript to handle file name display, image result, and paste upload -->
     <script>
         // Show the selected file name
         document.getElementById('image-upload').addEventListener('change', function () {
@@ -62,6 +62,38 @@
                 document.getElementById('result-section').style.display = 'block';
             })
             .catch(error => console.error('Error:', error));
+        });
+
+        // Support pasting an image for upload
+        document.addEventListener('paste', function (event) {
+            const items = event.clipboardData.items;
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                if (item.type.indexOf('image') !== -1) {
+                    const blob = item.getAsFile();
+                    const formData = new FormData();
+                    formData.append('image', blob);
+
+                    // Display file name
+                    document.getElementById('file-name').textContent = blob.name || 'Pasted Image';
+
+                    // Upload and display the pasted image
+                    fetch('/upload', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.blob())
+                    .then(blob => {
+                        var imgUrl = URL.createObjectURL(blob);
+                        document.getElementById('processed-image').src = imgUrl;
+                        document.getElementById('download-btn').href = imgUrl;
+
+                        // Show the result section with the processed image and download button
+                        document.getElementById('result-section').style.display = 'block';
+                    })
+                    .catch(error => console.error('Error:', error));
+                }
+            }
         });
     </script>
 </body>
