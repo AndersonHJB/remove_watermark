@@ -9,20 +9,58 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-<div class="container">
-    <header>
-        <h1>Remove Watermark from Your Images</h1>
-    </header>
+    <div class="container">
+        <header>
+            <h1>Remove Watermark from Your Images</h1>
+        </header>
 
-    <section class="form-section">
-        <form action="/upload" method="post" enctype="multipart/form-data">
-            <label for="image-upload" class="custom-file-upload">
-                <input type="file" name="image" id="image-upload" accept="image/*" required>
-                Choose Image
-            </label>
-            <button type="submit" class="submit-btn">Upload and Process</button>
-        </form>
-    </section>
-</div>
+        <section class="form-section">
+            <form id="upload-form" action="/upload" method="post" enctype="multipart/form-data">
+                <label for="image-upload" class="custom-file-upload">
+                    <input type="file" name="image" id="image-upload" accept="image/*" required>
+                    Choose Image
+                </label>
+                <span id="file-name" class="file-name">No file chosen</span>
+                <button type="submit" class="submit-btn">Upload and Process</button>
+            </form>
+
+            <!-- Image display area for processed image -->
+            <div id="result-section" class="result-section" style="display: none;">
+                <h3>Processed Image</h3>
+                <img id="processed-image" src="" alt="Processed Image">
+                <a id="download-btn" href="#" download="processed_image.png" class="download-btn">Download Processed Image</a>
+            </div>
+        </section>
+    </div>
+
+    <!-- JavaScript to handle file name display and image result -->
+    <script>
+        // Show the selected file name
+        document.getElementById('image-upload').addEventListener('change', function () {
+            var fileName = this.files[0].name;
+            document.getElementById('file-name').textContent = fileName;
+        });
+
+        // Handle form submission and show the processed image
+        document.getElementById('upload-form').addEventListener('submit', function (event) {
+            event.preventDefault(); // Prevent default form submission
+
+            var formData = new FormData(this);
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                var imgUrl = URL.createObjectURL(blob);
+                document.getElementById('processed-image').src = imgUrl;
+                document.getElementById('download-btn').href = imgUrl;
+
+                // Show the result section with the processed image and download button
+                document.getElementById('result-section').style.display = 'block';
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
 </body>
 </html>
