@@ -51,6 +51,12 @@ header h1 {
     display: none;
 }
 
+.file-name {
+    display: block;
+    margin-top: 10px;
+    color: #666;
+}
+
 .submit-btn {
     margin-top: 20px;
     padding: 10px 20px;
@@ -71,4 +77,36 @@ form {
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+.result-section {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.image-container {
+    margin: 20px 0;
+}
+
+.result-section img {
+    max-width: 100%;
+    height: auto;
+    margin-top: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.download-btn {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #008CBA;
+    color: white;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.download-btn:hover {
+    background-color: #007bb5;
 }
