@@ -11,19 +11,20 @@ if not os.path.exists(TEMP_DIR):
     os.makedirs(TEMP_DIR)
 
 
-# Function to remove watermark by covering it with a white background
 def remove_watermark(image_path):
     # Load the image using OpenCV
     img = cv2.imread(image_path)
 
-    # Define the watermark region (adjust coordinates according to watermark position)
+    # Get the dimensions of the image
     height, width, _ = img.shape
-    watermark_region = (width - 200, height - 50, width, height)  # Adjust as needed
+
+    # Define the watermark region and adjust the height (increase the values for better coverage)
+    watermark_region = (width - 200, height - 70, width, height)  # Adjust height to cover more
 
     # Fill the watermark area with white color (255, 255, 255 for white in RGB)
     cv2.rectangle(img, (watermark_region[0], watermark_region[1]),
-                  (watermark_region[2], watermark_region[3]),
-                  (255, 255, 255), -1)
+                        (watermark_region[2], watermark_region[3]),
+                        (255, 255, 255), -1)
 
     # Save the processed image
     output_path = os.path.join(TEMP_DIR, "processed_image.png")
